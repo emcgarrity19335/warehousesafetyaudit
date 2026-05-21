@@ -25,7 +25,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .dot-yes{background:#1d9e75}.dot-no{background:#d85a30}.dot-na{background:#888780}.dot-open{background:#d1d5db}
 .score-badge{margin-left:auto;font-size:13px;font-weight:600;color:#1f2937}
-/* Fine summary banner */
+.autosave-bar{font-size:11px;color:#6b7280;text-align:right;margin-bottom:.75rem;min-height:16px;transition:color .3s}
+.autosave-bar.saving{color:#1d9e75}
 .fine-summary{display:none;background:#fff8f5;border:1.5px solid #f5c4a0;border-radius:10px;padding:.9rem 1.25rem;margin-bottom:1.5rem}
 .fine-summary.show{display:block}
 .fine-summary-title{font-size:13px;font-weight:700;color:#7c2d0e;display:flex;align-items:center;gap:7px;margin-bottom:.5rem}
@@ -36,7 +37,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fine-stat-val{font-size:17px;font-weight:700;color:#7c2d0e}
 .fine-items-list{font-size:12px;color:#7c2d0e;line-height:1.7;border-top:1px solid #fbd5b5;padding-top:.5rem;margin-top:.1rem}
 .fine-items-list span{display:block}
-/* Section cards */
 .section-card{border:1px solid #e4e6ea;border-radius:12px;margin-bottom:1rem;overflow:visible}
 .section-header{background:#1a2e4a;color:#fff;padding:.75rem 1.25rem;display:flex;align-items:center;gap:.5rem;cursor:pointer;user-select:none;border-radius:12px 12px 0 0}
 .section-header.collapsed{border-radius:12px}
@@ -53,30 +53,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-group{display:flex;gap:6px;flex-shrink:0;padding-top:2px}
 .answer-btn{padding:5px 15px;font-size:12px;font-weight:600;border-radius:20px;border:1.5px solid;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit}
 .btn-yes{border-color:#1d9e75;color:#1d9e75}
-.btn-yes.active{background:#1d9e75;color:#fff;border-color:#1d9e75}
+.btn-yes.active{background:#1d9e75;color:#fff}
 .btn-no{border-color:#d85a30;color:#d85a30}
-.btn-no.active{background:#d85a30;color:#fff;border-color:#d85a30}
+.btn-no.active{background:#d85a30;color:#fff}
 .btn-na{border-color:#9ca3af;color:#9ca3af}
-.btn-na.active{background:#9ca3af;color:#fff;border-color:#9ca3af}
+.btn-na.active{background:#9ca3af;color:#fff}
 .item-details{margin-top:.6rem;display:none}
 .item-details.show{display:block}
-/* Fine range box */
 .fine-box{background:#fff8f5;border:1px solid #f5c4a0;border-radius:8px;padding:.6rem .9rem;margin-bottom:.6rem;font-size:12px;color:#7c2d0e;display:flex;align-items:center;gap:8px}
 .fine-box i{font-size:15px;flex-shrink:0;color:#c2460a}
-.fine-box strong{font-weight:700}
 .item-details textarea{width:100%;padding:8px 10px;font-size:12.5px;border:1px solid #d1d5db;border-radius:8px;background:#f9fafb;color:#1f2937;resize:vertical;min-height:64px;font-family:inherit}
 .item-details textarea:focus{outline:none;border-color:#1d9e75}
 .photo-area{margin-top:.5rem}
 .photo-label{font-size:11px;color:#6b7280;margin-bottom:.35rem;display:flex;align-items:center;gap:5px;font-weight:500}
-.photo-thumbs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.4rem}
-.photo-thumb{width:64px;height:64px;object-fit:cover;border-radius:7px;border:1px solid #e4e6ea;cursor:pointer}
+.photo-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:.4rem}
+.photo-thumb{width:80px;height:80px;object-fit:cover;border-radius:7px;border:1px solid #e4e6ea;cursor:pointer}
 .photo-thumb:hover{opacity:.8}
 .upload-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;font-size:12px;border:1px dashed #9ca3af;border-radius:8px;color:#6b7280;cursor:pointer;background:#f9fafb;font-family:inherit}
 .upload-btn:hover{border-color:#1d9e75;color:#1d9e75}
 .upload-btn input{display:none}
 .flag-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;background:#fde8e0;color:#9a3c1e;font-weight:600;margin-left:6px;vertical-align:middle;white-space:nowrap}
 .new-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;background:#d1fae5;color:#065f46;font-weight:600;margin-left:6px;vertical-align:middle}
-/* OSHA tooltip — fixed to viewport so it never clips */
 .osha-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;background:#dbeafe;color:#1e40af;font-weight:600;margin-left:5px;vertical-align:middle;cursor:help;white-space:nowrap}
 .osha-tooltip{visibility:hidden;opacity:0;position:fixed;width:290px;background:#1a2e4a;color:#e2eaf4;font-size:11.5px;font-weight:400;line-height:1.6;padding:10px 13px;border-radius:9px;z-index:99999;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,0.22);transition:opacity .12s}
 .osha-tooltip.visible{visibility:visible;opacity:1}
@@ -86,7 +83,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .submit-btn:hover{background:#243d5e}
 .submit-btn.secondary{background:#fff;color:#1a2e4a;border:1.5px solid #1a2e4a}
 .submit-btn.secondary:hover{background:#f0f4f8}
+.submit-btn.green{background:#1d9e75}
+.submit-btn.green:hover{background:#178a64}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed}
 .section-new-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(91,191,170,0.25);color:#5bbfaa;font-weight:600;margin-left:8px;vertical-align:middle}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a2e4a;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:500;z-index:99999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ── Print styles ── */
+@media print {
+  body{background:#fff;padding:0}
+  .wrapper{max-width:100%}
+  .card-wrap{box-shadow:none;border-radius:0}
+  .submit-area,.upload-btn,.btn-group,.autosave-bar{display:none!important}
+  .osha-tag{display:none}
+  .section-body.hidden{display:block!important}
+  .section-header{border-radius:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .item-details{display:block!important}
+  .fine-box{border:1px solid #f5c4a0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .photo-thumb{width:160px!important;height:160px!important;page-break-inside:avoid}
+  .photo-thumbs{gap:12px!important}
+  .audit-item{page-break-inside:avoid}
+  .section-card{page-break-inside:avoid;margin-bottom:1.5rem}
+}
 </style>
 </head>
 <body>
@@ -102,10 +121,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
     <div class="inner">
       <div class="audit-meta">
-        <div class="meta-field"><label>Auditor name</label><input type="text" placeholder="e.g. Evan McGarrity" id="auditor-name"></div>
-        <div class="meta-field"><label>Location / warehouse</label><input type="text" placeholder="e.g. Charlotte, NC" id="audit-location"></div>
-        <div class="meta-field"><label>Date</label><input type="date" id="audit-date"></div>
+        <div class="meta-field"><label>Auditor name</label><input type="text" placeholder="e.g. Evan McGarrity" id="auditor-name" oninput="scheduleAutosave()"></div>
+        <div class="meta-field"><label>Location / warehouse</label><input type="text" placeholder="e.g. Charlotte, NC" id="audit-location" oninput="scheduleAutosave()"></div>
+        <div class="meta-field"><label>Date</label><input type="date" id="audit-date" oninput="scheduleAutosave()"></div>
       </div>
+
+      <div class="autosave-bar" id="autosave-bar">Auto-saved locally ✓</div>
 
       <div class="status-bar">
         <span style="font-size:12px;font-weight:600;color:#6b7280;margin-right:.25rem">Progress:</span>
@@ -116,7 +137,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <span class="score-badge" id="score-pct">—</span>
       </div>
 
-      <!-- Fine summary banner -->
       <div class="fine-summary" id="fine-summary">
         <div class="fine-summary-title"><i class="ti ti-alert-triangle"></i>Potential OSHA fine exposure from current findings</div>
         <div class="fine-summary-grid">
@@ -130,159 +150,133 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="sections"></div>
 
       <div class="submit-area">
-        <button class="submit-btn secondary" onclick="exportTxt()"><i class="ti ti-download"></i>Export .txt report</button>
-        <button class="submit-btn" onclick="printReport()"><i class="ti ti-printer"></i>Print / Save PDF</button>
+        <button class="submit-btn secondary" onclick="exportTxt()"><i class="ti ti-download"></i>Export .txt</button>
+        <button class="submit-btn" onclick="printReport()"><i class="ti ti-printer"></i>Print / PDF</button>
+        <button class="submit-btn green" onclick="saveToSheets()" id="sheets-btn"><i class="ti ti-brand-google"></i>Save to Google Sheets</button>
       </div>
+      <p style="text-align:center;font-size:11px;color:#9ca3af;margin-top:.75rem">Progress auto-saves to this browser. Use "Save to Google Sheets" to share or archive a completed audit.</p>
     </div>
   </div>
   <p style="text-align:center;font-size:11px;color:#9ca3af;margin-top:1rem">© Top Tier Solar Solutions — Internal Use Only</p>
 </div>
 
-<!-- Shared tooltip element -->
 <div class="osha-tooltip" id="osha-tooltip"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-// ── Tooltip: single floating element, positioned via JS so it never clips ──
+// ── OSHA tooltip ──
 const TIP = document.getElementById('osha-tooltip');
 let tipTimer;
 document.addEventListener('mouseover', e => {
   const tag = e.target.closest('.osha-tag');
   if (!tag) return;
   clearTimeout(tipTimer);
-  const ref = tag.dataset.ref;
-  const txt = tag.dataset.tip;
-  TIP.innerHTML = `<strong>${ref}</strong>${txt}`;
+  TIP.innerHTML = `<strong>${tag.dataset.ref}</strong>${tag.dataset.tip}`;
   TIP.classList.add('visible');
   positionTip(tag);
 });
 document.addEventListener('mouseout', e => {
-  if (e.target.closest('.osha-tag')) {
-    tipTimer = setTimeout(() => TIP.classList.remove('visible'), 80);
-  }
+  if (e.target.closest('.osha-tag')) tipTimer = setTimeout(() => TIP.classList.remove('visible'), 80);
 });
-document.addEventListener('scroll', () => {
-  const active = document.querySelector('.osha-tag:hover');
-  if (active) positionTip(active);
-}, true);
+document.addEventListener('scroll', () => { const a = document.querySelector('.osha-tag:hover'); if(a) positionTip(a); }, true);
 function positionTip(tag) {
-  const r = tag.getBoundingClientRect();
-  const tw = 290, th = 90;
-  let left = r.left + r.width / 2 - tw / 2;
-  let top = r.top - th - 10;
-  if (left < 8) left = 8;
-  if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
-  if (top < 8) top = r.bottom + 8;
-  TIP.style.left = left + 'px';
-  TIP.style.top = top + 'px';
+  const r = tag.getBoundingClientRect(), tw = 290;
+  let left = r.left + r.width/2 - tw/2, top = r.top - 100 - 10;
+  if(left < 8) left = 8;
+  if(left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
+  if(top < 8) top = r.bottom + 8;
+  TIP.style.left = left+'px'; TIP.style.top = top+'px';
 }
 
 function osha(ref, tip) {
   return `<span class="osha-tag" data-ref="${ref.replace(/"/g,'&quot;')}" data-tip="${tip.replace(/"/g,'&quot;')}">OSHA</span>`;
 }
 
-// fineMin / fineMax in dollars per violation (2024 OSHA penalty schedule)
+// ── Data ──
 const SECTIONS = [
-  {
-    id:"office", label:"General office", icon:"ti-building",
-    items:[
-      {q:"Are labor posters mounted in a common area?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1903.2","Employers must post OSHA notices in a conspicuous place where employees report to work.")},
-      {q:"Are the office walking surfaces clear of obstructions?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.22(a)","Walking-working surfaces must be kept clean, orderly, and free of hazards.")},
-      {q:"Are computer cords managed properly? (No daisy-chaining)", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.303(b)","Electrical equipment must be used in a manner that does not create an overcurrent or fire hazard; daisy-chaining power strips is a common citation.")},
-      {q:"Are the property emergency evacuation maps posted?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.38(b)","Emergency action plans must include procedures for reporting emergencies and evacuation routes.")},
-      {q:"Is the break room clean, free of mold and residue?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.141","Employers must provide sanitary conditions in eating and break areas to protect employee health.")},
-    ]
-  },
-  {
-    id:"fire", label:"Fire extinguishers", icon:"ti-fire-extinguisher",
-    items:[
-      {q:"Are all fire extinguishers fully charged (arrow in green)?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(e)(1)","Portable fire extinguishers must be maintained in a fully charged and operable condition.")},
-      {q:"Are all fire extinguisher pins secured via tie wrap?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(e)(1)","Extinguishers must be kept operable; loose pins indicate a unit may have been used or tampered with.")},
-      {q:"Are all fire extinguishers mounted at appropriate height?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(c)(6)","Extinguishers weighing 40 lbs or less must be mounted so the handle is no higher than 5 feet from the floor.")},
-      {q:"Are all fire extinguishers within 1 year of stamped date?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(e)(3)","Stored-pressure extinguishers must receive an annual maintenance check.")},
-      {q:"Is a fire extinguisher mounted approximately every 75 feet?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(d)(2)","For Class A hazards, travel distance to any extinguisher must not exceed 75 feet.")},
-      {q:"Are all fire extinguishers inspected monthly and signed on tag?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.157(e)(2)","Extinguishers must be visually inspected monthly; the inspection date must be recorded on a tag attached to the unit.")},
-    ]
-  },
-  {
-    id:"general", label:"General warehouse", icon:"ti-building-warehouse",
-    items:[
-      {q:"Are warehouse walkways clear?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.22(b)","Aisles and passageways must be kept clear and in good repair, with no obstruction that could create a hazard.")},
-      {q:"Do electrical panels have 3 feet of clearance?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.303(g)(1)","A minimum of 3 feet of clear space must be maintained in front of all electrical panels.")},
-      {q:"Are ladders secured vertically or stored horizontally?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.23(b)","Ladders must be stored in a manner that prevents accidental displacement and physical damage.")},
-      {q:"Does the ice machine have a rubber mat in front to prevent slip hazards?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.22(a)(2)","Floors must be kept clean and dry; anti-slip mats are required in areas prone to wet conditions.")},
-      {q:"Does the warehouse have an eye wash kit mounted?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.151(c)","Where employees may be exposed to injurious corrosive materials, suitable facilities for flushing eyes must be provided.")},
-      {q:"Does the warehouse have a fully stocked first aid kit?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.151(b)","Adequate first aid supplies must be readily available in every workplace.")},
-      {q:"Are all emergency exits clear of obstructions?", flag:true, fineMin:5000, fineMax:156259, cite:osha("29 CFR 1910.37(a)(3)","Exit routes must remain free of obstructions at all times to allow unobstructed egress during an emergency.")},
-    ]
-  },
-  {
-    id:"forklift", label:"Forklift", icon:"ti-forklift",
-    items:[
-      {q:"Are the daily inspection sheets kept up to date?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.178(q)(7)","Powered industrial trucks must be examined before each shift; defects must be reported and corrected before use.")},
-      {q:"Are propane tanks being stored in approved cages?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.110(b)(6)","LP-Gas cylinders not connected to equipment must be stored in approved locations away from building exits.")},
-      {q:"Is the forklift in good working condition?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.178(p)(1)","Trucks in need of repair must be taken out of service; only authorized repairs by qualified personnel are permitted.")},
-      {q:"Are forklift operators trained and certified?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.178(l)","Operators must be trained and evaluated before operating a powered industrial truck; retraining is required after observed unsafe operation.")},
-      {q:"Are forklift speed limit signs posted in the warehouse?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.178(n)(8)","Safe speeds must be maintained, and where pedestrians may be present, adequate warnings must be in place.")},
-    ]
-  },
-  {
-    id:"specific", label:"Warehouse specific", icon:"ti-packages",
-    items:[
-      {q:"Do storage racks have maximum weight labels posted on each shelf?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.176(b)","Storage racks must have posted maximum safe load limits; exceeding limits creates a collapse hazard.")},
-      {q:"Are conduit and rails stored properly?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.176(b)","Materials must be stored in a stable manner; long materials like conduit must be secured to prevent tipping or rolling.")},
-      {q:"Is the flammable cabinet free of combustibles?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.106(d)(3)","Flammable liquid storage cabinets must not contain non-flammable combustibles; mixing materials defeats the purpose of the cabinet.")},
-      {q:"Is the safety data sheet (SDS) binder stocked and mounted in warehouse?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.1200(g)","Employers must maintain SDS for each hazardous chemical and ensure they are readily accessible to employees during each work shift.")},
-      {q:"Is safety equipment for all field personnel fully stocked? (Arc flash shield, PPE)", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.132(d)","Employers must assess the workplace for hazards requiring PPE and ensure adequate equipment is provided for all workers.")},
-      {q:"Is the parking area clean of debris?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.22(a)","All walking and working surfaces, including external areas, must be maintained free of debris and hazards.")},
-      {q:"Is recycled and discarded material completely inside dumpsters (nothing sticking out)?", flag:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.176(c)","Aisles and storage areas must be kept free of hazardous projections; materials sticking out of dumpsters can cause lacerations.")},
-      {q:"Are pallets NOT stacked more than 7 feet?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.176(b)","Stacking height limits must be observed to prevent collapse; 7 feet is the commonly enforced limit for unsupported pallet stacking.")},
-      {q:"Does the dock ramp have a bright-colored barrier blocking the fall hazard?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.29(b)(1)","Dock edges and open sides with a drop of 4 feet or more must be guarded by a standard railing or equivalent barrier.")},
-    ]
-  },
-  {
-    id:"emergency", label:"Emergency preparedness", icon:"ti-alert-triangle", isNew:true,
-    items:[
-      {q:"Is there a written emergency action plan posted and reviewed with employees?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.38(a)","Employers with more than 10 employees must have a written Emergency Action Plan covering evacuation, emergency reporting, and employee accountability.")},
-      {q:"Are emergency contact numbers posted in visible locations?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.38(c)(1)","The EAP must include procedures for reporting emergencies; posting numbers prominently is considered a best practice and directly supports this requirement.")},
-      {q:"Have all employees received emergency egress training in the last 12 months?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.38(f)","Employees must be trained when the EAP is first developed and whenever their responsibilities or the plan changes.")},
-      {q:"Is an AED (defibrillator) present and accessible?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.151 / OSHA LOI","OSHA strongly recommends AEDs in the workplace as part of first aid readiness; some state plans require them.")},
-      {q:"Are first aid-certified employees identified and their certs current?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.151(b)","In the absence of an infirmary or clinic near the workplace, a person trained to render first aid must be available.")},
-    ]
-  }
+  { id:"office", label:"General office", icon:"ti-building", items:[
+    {q:"Are labor posters mounted in a common area?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1903.2","Employers must post OSHA notices in a conspicuous place where employees report to work.")},
+    {q:"Are the office walking surfaces clear of obstructions?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.22(a)","Walking-working surfaces must be kept clean, orderly, and free of hazards.")},
+    {q:"Are computer cords managed properly? (No daisy-chaining)", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.303(b)","Electrical equipment must be used in a manner that does not create an overcurrent or fire hazard; daisy-chaining power strips is a common citation.")},
+    {q:"Are the property emergency evacuation maps posted?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.38(b)","Emergency action plans must include procedures for reporting emergencies and evacuation routes.")},
+    {q:"Is the break room clean, free of mold and residue?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.141","Employers must provide sanitary conditions in eating and break areas to protect employee health.")},
+  ]},
+  { id:"fire", label:"Fire extinguishers", icon:"ti-fire-extinguisher", items:[
+    {q:"Are all fire extinguishers fully charged (arrow in green)?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(e)(1)","Portable fire extinguishers must be maintained in a fully charged and operable condition.")},
+    {q:"Are all fire extinguisher pins secured via tie wrap?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(e)(1)","Extinguishers must be kept operable; loose pins indicate a unit may have been used or tampered with.")},
+    {q:"Are all fire extinguishers mounted at appropriate height?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(c)(6)","Extinguishers weighing 40 lbs or less must be mounted so the handle is no higher than 5 feet from the floor.")},
+    {q:"Are all fire extinguishers within 1 year of stamped date?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(e)(3)","Stored-pressure extinguishers must receive an annual maintenance check.")},
+    {q:"Is a fire extinguisher mounted approximately every 75 feet?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.157(d)(2)","For Class A hazards, travel distance to any extinguisher must not exceed 75 feet.")},
+    {q:"Are all fire extinguishers inspected monthly and signed on tag?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.157(e)(2)","Extinguishers must be visually inspected monthly; the inspection date must be recorded on a tag attached to the unit.")},
+  ]},
+  { id:"general", label:"General warehouse", icon:"ti-building-warehouse", items:[
+    {q:"Are warehouse walkways clear?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.22(b)","Aisles and passageways must be kept clear and in good repair, with no obstruction that could create a hazard.")},
+    {q:"Do electrical panels have 3 feet of clearance?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.303(g)(1)","A minimum of 3 feet of clear space must be maintained in front of all electrical panels.")},
+    {q:"Are ladders secured vertically or stored horizontally?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.23(b)","Ladders must be stored in a manner that prevents accidental displacement and physical damage.")},
+    {q:"Does the ice machine have a rubber mat in front to prevent slip hazards?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.22(a)(2)","Floors must be kept clean and dry; anti-slip mats are required in areas prone to wet conditions.")},
+    {q:"Does the warehouse have an eye wash kit mounted?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.151(c)","Where employees may be exposed to injurious corrosive materials, suitable facilities for flushing eyes must be provided.")},
+    {q:"Does the warehouse have a fully stocked first aid kit?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.151(b)","Adequate first aid supplies must be readily available in every workplace.")},
+    {q:"Are all emergency exits clear of obstructions?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.37(a)(3)","Exit routes must remain free of obstructions at all times to allow unobstructed egress during an emergency.")},
+  ]},
+  { id:"forklift", label:"Forklift", icon:"ti-forklift", items:[
+    {q:"Are the daily inspection sheets kept up to date?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.178(q)(7)","Powered industrial trucks must be examined before each shift; defects must be reported and corrected before use.")},
+    {q:"Are propane tanks being stored in approved cages?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.110(b)(6)","LP-Gas cylinders not connected to equipment must be stored in approved locations away from building exits.")},
+    {q:"Is the forklift in good working condition?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.178(p)(1)","Trucks in need of repair must be taken out of service; only authorized repairs by qualified personnel are permitted.")},
+    {q:"Are forklift operators trained and certified?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.178(l)","Operators must be trained and evaluated before operating a powered industrial truck; retraining is required after observed unsafe operation.")},
+    {q:"Are forklift speed limit signs posted in the warehouse?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.178(n)(8)","Safe speeds must be maintained, and where pedestrians may be present, adequate warnings must be in place.")},
+  ]},
+  { id:"specific", label:"Warehouse specific", icon:"ti-packages", items:[
+    {q:"Do storage racks have maximum weight labels posted on each shelf?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.176(b)","Storage racks must have posted maximum safe load limits; exceeding limits creates a collapse hazard.")},
+    {q:"Are conduit and rails stored properly?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.176(b)","Materials must be stored in a stable manner; long materials like conduit must be secured to prevent tipping or rolling.")},
+    {q:"Is the flammable cabinet free of combustibles?", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.106(d)(3)","Flammable liquid storage cabinets must not contain non-flammable combustibles; mixing materials defeats the purpose of the cabinet.")},
+    {q:"Is the safety data sheet (SDS) binder stocked and mounted in warehouse?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.1200(g)","Employers must maintain SDS for each hazardous chemical and ensure they are readily accessible to employees during each work shift.")},
+    {q:"Is safety equipment for all field personnel fully stocked? (Arc flash shield, PPE)", flag:true, fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.132(d)","Employers must assess the workplace for hazards requiring PPE and ensure adequate equipment is provided for all workers.")},
+    {q:"Is the parking area clean of debris?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.22(a)","All walking and working surfaces, including external areas, must be maintained free of debris and hazards.")},
+    {q:"Is recycled and discarded material completely inside dumpsters (nothing sticking out)?", flag:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.176(c)","Aisles and storage areas must be kept free of hazardous projections; materials sticking out of dumpsters can cause lacerations.")},
+    {q:"Are pallets NOT stacked more than 7 feet?", fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.176(b)","Stacking height limits must be observed to prevent collapse; 7 feet is the commonly enforced limit for unsupported pallet stacking.")},
+    {q:"Does the dock ramp have a bright-colored barrier blocking the fall hazard?", fineMin:5000, fineMax:15625, cite:osha("29 CFR 1910.29(b)(1)","Dock edges and open sides with a drop of 4 feet or more must be guarded by a standard railing or equivalent barrier.")},
+  ]},
+  { id:"emergency", label:"Emergency preparedness", icon:"ti-alert-triangle", isNew:true, items:[
+    {q:"Is there a written emergency action plan posted and reviewed with employees?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.38(a)","Employers with more than 10 employees must have a written Emergency Action Plan covering evacuation, emergency reporting, and employee accountability.")},
+    {q:"Are emergency contact numbers posted in visible locations?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.38(c)(1)","The EAP must include procedures for reporting emergencies; posting numbers prominently is considered a best practice and directly supports this requirement.")},
+    {q:"Have all employees received emergency egress training in the last 12 months?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.38(f)","Employees must be trained when the EAP is first developed and whenever their responsibilities or the plan changes.")},
+    {q:"Is an AED (defibrillator) present and accessible?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.151 / OSHA LOI","OSHA strongly recommends AEDs in the workplace as part of first aid readiness; some state plans require them.")},
+    {q:"Are first aid-certified employees identified and their certs current?", isNew:true, fineMin:1000, fineMax:15625, cite:osha("29 CFR 1910.151(b)","In the absence of an infirmary or clinic near the workplace, a person trained to render first aid must be available.")},
+  ]},
 ];
 
+// ── State ──
 const state = {};
-SECTIONS.forEach(s => s.items.forEach((item,i)=>{
-  state[`${s.id}-${i}`]={answer:null,comment:"",photos:[]};
+SECTIONS.forEach(s => s.items.forEach((item,i) => {
+  state[`${s.id}-${i}`] = {answer:null, comment:"", photos:[]};
 }));
 
-function fmt(n){return '$'+n.toLocaleString();}
-
+// ── Build UI ──
 function buildSections(){
-  const cont=document.getElementById("sections");
-  SECTIONS.forEach(sec=>{
-    const card=document.createElement("div");
-    card.className="section-card";
-    const secBadge=sec.isNew?`<span class="section-new-badge"><i class="ti ti-sparkles" style="font-size:10px"></i>Added</span>`:'';
-    card.innerHTML=`
+  const cont = document.getElementById("sections");
+  SECTIONS.forEach(sec => {
+    const card = document.createElement("div");
+    card.className = "section-card";
+    const secBadge = sec.isNew ? `<span class="section-new-badge"><i class="ti ti-sparkles" style="font-size:10px"></i>Added</span>` : '';
+    card.innerHTML = `
       <div class="section-header" onclick="toggleSection('body-${sec.id}',this)">
         <i class="ti ${sec.icon} sec-icon"></i>
         <span class="sec-label">${sec.label}${secBadge}</span>
         <i class="ti ti-chevron-down toggle"></i>
       </div>
       <div class="section-body" id="body-${sec.id}">
-        ${sec.items.map((item,i)=>buildItem(sec.id,item,i)).join('')}
+        ${sec.items.map((item,i) => buildItem(sec.id,item,i)).join('')}
       </div>`;
     cont.appendChild(card);
   });
 }
 
-function buildItem(secId,item,i){
-  const key=`${secId}-${i}`;
-  const flagBadge=item.flag?`<span class="flag-badge"><i class="ti ti-alert-circle" style="font-size:10px"></i>High priority</span>`:'';
-  const oshaBadge=item.cite?item.cite:'';
-  const newBadge=item.isNew?`<span class="new-badge"><i class="ti ti-sparkles" style="font-size:10px"></i>OSHA+</span>`:'';
-  const fineRange=item.fineMin?`<div class="fine-box"><i class="ti ti-coins"></i><span>Potential OSHA fine: <strong>${fmt(item.fineMin)} – ${fmt(item.fineMax)}</strong> per violation (2024 penalty schedule)</span></div>`:'';
+function buildItem(secId, item, i){
+  const key = `${secId}-${i}`;
+  const flagBadge = item.flag ? `<span class="flag-badge"><i class="ti ti-alert-circle" style="font-size:10px"></i>High priority</span>` : '';
+  const oshaBadge = item.cite || '';
+  const newBadge = item.isNew ? `<span class="new-badge"><i class="ti ti-sparkles" style="font-size:10px"></i>OSHA+</span>` : '';
+  const fineRange = item.fineMin ? `<div class="fine-box"><i class="ti ti-coins"></i><span>Potential OSHA fine: <strong>$${item.fineMin.toLocaleString()} – $${item.fineMax.toLocaleString()}</strong> per violation (2024 penalty schedule)</span></div>` : '';
   return `
   <div class="audit-item" id="item-${key}">
     <div class="item-row">
@@ -295,122 +289,221 @@ function buildItem(secId,item,i){
     </div>
     <div class="item-details" id="details-${key}">
       ${fineRange}
-      <textarea placeholder="Add a note or corrective action..." oninput="saveComment('${key}',this.value)"></textarea>
+      <textarea placeholder="Add a note or corrective action..." oninput="saveComment('${key}',this.value);scheduleAutosave()">${state[key].comment||''}</textarea>
       <div class="photo-area">
-        <div class="photo-label"><i class="ti ti-camera" style="font-size:13px"></i>Photos (click thumbnail to remove)</div>
+        <div class="photo-label"><i class="ti ti-camera" style="font-size:13px"></i>Photos (click to remove)</div>
         <div class="photo-thumbs" id="thumbs-${key}"></div>
-        <label class="upload-btn">
-          <input type="file" accept="image/*" multiple onchange="addPhotos('${key}',this)">
-          <i class="ti ti-upload" style="font-size:13px"></i>Add photo
-        </label>
+        <label class="upload-btn"><input type="file" accept="image/*" multiple onchange="addPhotos('${key}',this)"><i class="ti ti-upload" style="font-size:13px"></i>Add photo</label>
       </div>
     </div>
   </div>`;
 }
 
-function setAnswer(key,ans,btn){
-  state[key].answer=ans;
-  const row=document.getElementById(`item-${key}`);
-  row.querySelectorAll(".answer-btn").forEach(b=>b.classList.remove("active"));
+function setAnswer(key, ans, btn){
+  state[key].answer = ans;
+  const row = document.getElementById(`item-${key}`);
+  row.querySelectorAll(".answer-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
-  document.getElementById(`details-${key}`).classList.toggle("show", ans==='no');
+  document.getElementById(`details-${key}`).classList.toggle("show", ans === 'no');
   updateStats();
+  scheduleAutosave();
 }
 
-function saveComment(key,val){state[key].comment=val;}
+function saveComment(key, val){ state[key].comment = val; }
 
-function addPhotos(key,input){
-  Array.from(input.files).forEach(f=>{
-    const url=URL.createObjectURL(f);
-    state[key].photos.push({name:f.name,url});
-    const thumbs=document.getElementById(`thumbs-${key}`);
-    const img=document.createElement("img");
-    img.src=url; img.className="photo-thumb"; img.title="Click to remove";
-    img.onclick=()=>{img.remove(); state[key].photos=state[key].photos.filter(p=>p.url!==url);};
+function addPhotos(key, input){
+  Array.from(input.files).forEach(f => {
+    const url = URL.createObjectURL(f);
+    state[key].photos.push({name:f.name, url});
+    const thumbs = document.getElementById(`thumbs-${key}`);
+    const img = document.createElement("img");
+    img.src = url; img.className = "photo-thumb"; img.title = "Click to remove";
+    img.onclick = () => { img.remove(); state[key].photos = state[key].photos.filter(p=>p.url!==url); };
     thumbs.appendChild(img);
   });
 }
 
-function toggleSection(bodyId,header){
-  const body=document.getElementById(bodyId);
-  const isHidden=body.classList.contains("hidden");
-  body.classList.toggle("hidden",!isHidden);
-  header.classList.toggle("collapsed",!isHidden);
+function toggleSection(bodyId, header){
+  const body = document.getElementById(bodyId);
+  const isHidden = body.classList.contains("hidden");
+  body.classList.toggle("hidden", !isHidden);
+  header.classList.toggle("collapsed", !isHidden);
 }
 
+function fmt(n){ return '$'+n.toLocaleString(); }
+
 function updateStats(){
-  let yes=0,no=0,na=0,open=0;
-  let totalMin=0,totalMax=0,violations=[];
-  Object.entries(state).forEach(([key,s])=>{
-    if(s.answer==='yes')yes++;
+  let yes=0, no=0, na=0, open=0, totalMin=0, totalMax=0, violations=[];
+  Object.entries(state).forEach(([key, s]) => {
+    if(s.answer==='yes') yes++;
     else if(s.answer==='no'){
       no++;
-      // find item data
-      for(const sec of SECTIONS){
-        sec.items.forEach((item,i)=>{
-          if(`${sec.id}-${i}`===key){
-            if(item.fineMin){totalMin+=item.fineMin; totalMax+=item.fineMax;}
-            violations.push(item.q);
-          }
-        });
-      }
+      SECTIONS.forEach(sec => sec.items.forEach((item,i) => {
+        if(`${sec.id}-${i}`===key){ if(item.fineMin){totalMin+=item.fineMin;totalMax+=item.fineMax;} violations.push(item.q); }
+      }));
     }
-    else if(s.answer==='na')na++;
+    else if(s.answer==='na') na++;
     else open++;
   });
-  document.getElementById("cnt-yes").textContent=yes;
-  document.getElementById("cnt-no").textContent=no;
-  document.getElementById("cnt-na").textContent=na;
-  document.getElementById("cnt-open").textContent=open;
-  const pct=(yes+no)>0?Math.round(yes/(yes+no)*100):null;
-  document.getElementById("score-pct").textContent=pct!==null?`Pass rate: ${pct}%`:"—";
-  // Fine summary
-  const banner=document.getElementById("fine-summary");
+  document.getElementById("cnt-yes").textContent = yes;
+  document.getElementById("cnt-no").textContent = no;
+  document.getElementById("cnt-na").textContent = na;
+  document.getElementById("cnt-open").textContent = open;
+  const pct = (yes+no)>0 ? Math.round(yes/(yes+no)*100) : null;
+  document.getElementById("score-pct").textContent = pct!==null ? `Pass rate: ${pct}%` : "—";
+  const banner = document.getElementById("fine-summary");
   if(no>0){
     banner.classList.add("show");
-    document.getElementById("fs-count").textContent=no;
-    document.getElementById("fs-min").textContent=fmt(totalMin);
-    document.getElementById("fs-max").textContent=fmt(totalMax);
-    document.getElementById("fs-items").innerHTML=violations.map(v=>`<span>• ${v}</span>`).join('');
+    document.getElementById("fs-count").textContent = no;
+    document.getElementById("fs-min").textContent = fmt(totalMin);
+    document.getElementById("fs-max").textContent = fmt(totalMax);
+    document.getElementById("fs-items").innerHTML = violations.map(v=>`<span>• ${v}</span>`).join('');
   } else {
     banner.classList.remove("show");
   }
 }
 
-function exportTxt(){
-  const auditor=document.getElementById("auditor-name").value||"—";
-  const location=document.getElementById("audit-location").value||"—";
-  const date=document.getElementById("audit-date").value||new Date().toISOString().slice(0,10);
-  let totalMin=0,totalMax=0;
-  let lines=[`TOP TIER SOLAR SOLUTIONS — WAREHOUSE SAFETY AUDIT`,`Auditor: ${auditor}`,`Location: ${location}`,`Date: ${date}`,``];
-  SECTIONS.forEach(sec=>{
-    lines.push(`\n=== ${sec.label.toUpperCase()} ===`);
-    sec.items.forEach((item,i)=>{
-      const k=`${sec.id}-${i}`;
-      const s=state[k];
-      const ans=s.answer?s.answer.toUpperCase():"UNANSWERED";
-      lines.push(`[${ans}] ${item.q}`);
-      if(ans==='NO'&&item.fineMin){
-        totalMin+=item.fineMin; totalMax+=item.fineMax;
-        lines.push(`  Fine exposure: ${fmt(item.fineMin)} – ${fmt(item.fineMax)}`);
-      }
-      if(s.comment)lines.push(`  Note: ${s.comment}`);
-    });
-  });
-  lines.push(`\n=== FINE EXPOSURE SUMMARY ===`);
-  lines.push(`Total potential fines: ${fmt(totalMin)} – ${fmt(totalMax)}`);
-  const blob=new Blob([lines.join("\n")],{type:"text/plain"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=`audit-report-${date}.txt`;
-  a.click();
+// ── Auto-save to localStorage ──
+const LS_KEY = 'toptier_audit_v1';
+let autosaveTimer;
+
+function scheduleAutosave(){
+  const bar = document.getElementById('autosave-bar');
+  bar.textContent = 'Saving...'; bar.classList.add('saving');
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(() => {
+    try {
+      const snapshot = {
+        auditor: document.getElementById('auditor-name').value,
+        location: document.getElementById('audit-location').value,
+        date: document.getElementById('audit-date').value,
+        state: Object.fromEntries(Object.entries(state).map(([k,v])=>[k,{answer:v.answer,comment:v.comment}]))
+      };
+      localStorage.setItem(LS_KEY, JSON.stringify(snapshot));
+      bar.textContent = 'Auto-saved locally ✓'; bar.classList.remove('saving');
+    } catch(e){ bar.textContent = ''; }
+  }, 800);
 }
 
-function printReport(){window.print();}
+function loadFromLocalStorage(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const snap = JSON.parse(raw);
+    if(snap.auditor) document.getElementById('auditor-name').value = snap.auditor;
+    if(snap.location) document.getElementById('audit-location').value = snap.location;
+    if(snap.date) document.getElementById('audit-date').value = snap.date;
+    if(snap.state){
+      Object.entries(snap.state).forEach(([key, s]) => {
+        if(!state[key]) return;
+        state[key].answer = s.answer;
+        state[key].comment = s.comment || '';
+        if(s.answer){
+          const row = document.getElementById(`item-${key}`);
+          if(!row) return;
+          const btn = row.querySelector(`.btn-${s.answer}`);
+          if(btn) btn.classList.add('active');
+          document.getElementById(`details-${key}`).classList.toggle("show", s.answer==='no');
+          const ta = document.querySelector(`#details-${key} textarea`);
+          if(ta) ta.value = s.comment || '';
+        }
+      });
+    }
+    updateStats();
+    document.getElementById('autosave-bar').textContent = 'Restored from last session ✓';
+  } catch(e){}
+}
 
+// ── Save to Google Sheets via Apps Script ──
+// Sheet ID: 1gEqDzZeJGPeA_b57cGGxbmsskY2kiRZrv3kOfjswJoM
+// To enable: In Google Sheets → Extensions → Apps Script → paste the doPost script → Deploy as Web App → paste URL below
+const SHEETS_WEBHOOK = ''; // <-- paste your Apps Script Web App URL here after setup
+
+function showToast(msg, dur=3000){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+async function saveToSheets(){
+  const auditor = document.getElementById('auditor-name').value || '—';
+  const location = document.getElementById('audit-location').value || '—';
+  const date = document.getElementById('audit-date').value || new Date().toISOString().slice(0,10);
+
+  if(!SHEETS_WEBHOOK){
+    // Build a CSV and download it — user can import to the sheet manually
+    let rows = [['Date','Location','Auditor','Section','Question','Answer','Note','Fine Min','Fine Max']];
+    let totalMin=0, totalMax=0;
+    SECTIONS.forEach(sec => {
+      sec.items.forEach((item,i) => {
+        const k = `${sec.id}-${i}`;
+        const s = state[k];
+        const ans = s.answer || 'unanswered';
+        if(ans==='no' && item.fineMin){ totalMin+=item.fineMin; totalMax+=item.fineMax; }
+        rows.push([date, location, auditor, sec.label, item.q, ans, s.comment||'',
+          ans==='no'&&item.fineMin ? item.fineMin : '', ans==='no'&&item.fineMax ? item.fineMax : '']);
+      });
+    });
+    rows.push(['','','','','TOTAL FINE EXPOSURE','','', totalMin, totalMax]);
+    const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `audit-${date}.csv`;
+    a.click();
+    showToast('📥 CSV downloaded — drag it into your Google Sheet to import!', 5000);
+    return;
+  }
+
+  // If webhook is configured, POST directly
+  const btn = document.getElementById('sheets-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i>Saving...';
+  const rows = [];
+  SECTIONS.forEach(sec => {
+    sec.items.forEach((item,i) => {
+      const k = `${sec.id}-${i}`;
+      const s = state[k];
+      rows.push([date, location, auditor, sec.label, item.q, s.answer||'unanswered', s.comment||'',
+        s.answer==='no'&&item.fineMin?item.fineMin:'', s.answer==='no'&&item.fineMax?item.fineMax:'']);
+    });
+  });
+  try {
+    await fetch(SHEETS_WEBHOOK, {method:'POST', body:JSON.stringify({rows}), headers:{'Content-Type':'application/json'}});
+    showToast('✅ Audit saved to Google Sheets!');
+  } catch(e){
+    showToast('❌ Could not reach Sheets. Try the CSV export instead.');
+  }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-brand-google"></i>Save to Google Sheets';
+}
+
+function exportTxt(){
+  const auditor = document.getElementById('auditor-name').value||'—';
+  const location = document.getElementById('audit-location').value||'—';
+  const date = document.getElementById('audit-date').value||new Date().toISOString().slice(0,10);
+  let totalMin=0, totalMax=0;
+  let lines = [`TOP TIER SOLAR SOLUTIONS — WAREHOUSE SAFETY AUDIT`,`Auditor: ${auditor}`,`Location: ${location}`,`Date: ${date}`,``];
+  SECTIONS.forEach(sec => {
+    lines.push(`\n=== ${sec.label.toUpperCase()} ===`);
+    sec.items.forEach((item,i) => {
+      const k = `${sec.id}-${i}`;
+      const s = state[k];
+      const ans = s.answer ? s.answer.toUpperCase() : 'UNANSWERED';
+      lines.push(`[${ans}] ${item.q}`);
+      if(ans==='NO'&&item.fineMin){ totalMin+=item.fineMin; totalMax+=item.fineMax; lines.push(`  Fine exposure: ${fmt(item.fineMin)} – ${fmt(item.fineMax)}`); }
+      if(s.comment) lines.push(`  Note: ${s.comment}`);
+    });
+  });
+  lines.push(`\n=== FINE EXPOSURE SUMMARY ===\nTotal potential fines: ${fmt(totalMin)} – ${fmt(totalMax)}`);
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `audit-report-${date}.txt`; a.click();
+}
+
+function printReport(){ window.print(); }
+
+// ── Init ──
 buildSections();
-document.getElementById("audit-date").value=new Date().toISOString().slice(0,10);
-updateStats();
+document.getElementById("audit-date").value = new Date().toISOString().slice(0,10);
+loadFromLocalStorage();
 </script>
 </body>
 </html>

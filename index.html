@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Tier Solar Solutions — Warehouse Safety Audit</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;min-height:100vh;padding:1.5rem 1rem}
+.wrapper{max-width:820px;margin:0 auto}
+.card-wrap{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+.tt-header{background:#1a2e4a;color:#fff;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem}
+.tt-header img{height:40px;filter:brightness(0) invert(1)}
+.tt-header-text h1{font-size:18px;font-weight:600;color:#fff}
+.tt-header-text p{font-size:12px;color:#a8c4e0;margin-top:2px}
+.inner{padding:1.25rem 1.5rem}
+.audit-meta{background:#f7f8fa;border:1px solid #e4e6ea;border-radius:10px;padding:1rem 1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1.5rem}
+@media(max-width:600px){.audit-meta{grid-template-columns:1fr}}
+.meta-field label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px;font-weight:500}
+.meta-field input{width:100%;padding:7px 9px;font-size:13px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1a2e4a;font-family:inherit}
+.meta-field input:focus{outline:none;border-color:#1d9e75}
+.status-bar{display:flex;gap:1rem;background:#f7f8fa;border:1px solid #e4e6ea;border-radius:10px;padding:.75rem 1.25rem;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap}
+.stat-pill{display:flex;align-items:center;gap:6px;font-size:13px;color:#374151}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-yes{background:#1d9e75}.dot-no{background:#d85a30}.dot-na{background:#888780}.dot-open{background:#d1d5db}
+.section-card{border:1px solid #e4e6ea;border-radius:12px;margin-bottom:1rem;overflow:visible}
+.section-header{background:#1a2e4a;color:#fff;padding:.75rem 1.25rem;display:flex;align-items:center;gap:.5rem;cursor:pointer;user-select:none;border-radius:12px 12px 0 0}
+.section-header.collapsed{border-radius:12px}
+.section-header i.sec-icon{font-size:16px;color:#5bbfaa}
+.section-header span.sec-label{font-size:14px;font-weight:500;flex:1}
+.section-header i.toggle{font-size:14px;color:#a8c4e0;transition:transform .2s;margin-left:auto}
+.section-header.collapsed i.toggle{transform:rotate(-90deg)}
+.section-body{padding:.75rem 1.25rem;display:block}
+.section-body.hidden{display:none}
+.audit-item{padding:.75rem 0;border-bottom:1px solid #f0f2f5}
+.audit-item:last-child{border-bottom:none}
+.item-row{display:flex;align-items:flex-start;gap:1rem}
+.item-question{flex:1;font-size:13.5px;color:#1f2937;line-height:1.55;padding-top:5px}
+.btn-group{display:flex;gap:6px;flex-shrink:0;padding-top:2px}
+.answer-btn{padding:5px 15px;font-size:12px;font-weight:600;border-radius:20px;border:1.5px solid;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit}
+.btn-yes{border-color:#1d9e75;color:#1d9e75}
+.btn-yes.active{background:#1d9e75;color:#fff;border-color:#1d9e75}
+.btn-no{border-color:#d85a30;color:#d85a30}
+.btn-no.active{background:#d85a30;color:#fff;border-color:#d85a30}
+.btn-na{border-color:#9ca3af;color:#9ca3af}
+.btn-na.active{background:#9ca3af;color:#fff;border-color:#9ca3af}
+.item-details{margin-top:.6rem;display:none}
+.item-details.show{display:block}
+.item-details textarea{width:100%;padding:8px 10px;font-size:12.5px;border:1px solid #d1d5db;border-radius:8px;background:#f9fafb;color:#1f2937;resize:vertical;min-height:64px;font-family:inherit}
+.item-details textarea:focus{outline:none;border-color:#1d9e75}
+.photo-area{margin-top:.5rem}
+.photo-label{font-size:11px;color:#6b7280;margin-bottom:.35rem;display:flex;align-items:center;gap:5px;font-weight:500}
+.photo-thumbs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.4rem}
+.photo-thumb{width:64px;height:64px;object-fit:cover;border-radius:7px;border:1px solid #e4e6ea;cursor:pointer}
+.photo-thumb:hover{opacity:.8}
+.upload-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;font-size:12px;border:1px dashed #9ca3af;border-radius:8px;color:#6b7280;cursor:pointer;background:#f9fafb;font-family:inherit}
+.upload-btn:hover{border-color:#1d9e75;color:#1d9e75}
+.upload-btn input{display:none}
+.flag-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;background:#fde8e0;color:#9a3c1e;font-weight:600;margin-left:6px;vertical-align:middle;white-space:nowrap}
+.new-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;background:#d1fae5;color:#065f46;font-weight:600;margin-left:6px;vertical-align:middle}
+.osha-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;background:#dbeafe;color:#1e40af;font-weight:600;margin-left:5px;vertical-align:middle;cursor:help;position:relative;white-space:nowrap}
+.osha-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:270px;background:#1a2e4a;color:#e2eaf4;font-size:11.5px;font-weight:400;line-height:1.55;padding:10px 12px;border-radius:9px;z-index:9999;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,0.2)}
+.osha-tag:hover .osha-tooltip{display:block}
+.osha-tooltip strong{color:#5bbfaa;font-weight:600;display:block;margin-bottom:4px;font-size:11px}
+.osha-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a2e4a}
+.submit-area{text-align:center;margin-top:1.5rem;padding-bottom:.5rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.submit-btn{background:#1a2e4a;color:#fff;border:none;padding:11px 28px;font-size:14px;font-weight:600;border-radius:9px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;transition:background .2s}
+.submit-btn:hover{background:#243d5e}
+.submit-btn.secondary{background:#fff;color:#1a2e4a;border:1.5px solid #1a2e4a}
+.submit-btn.secondary:hover{background:#f0f4f8}
+.score-badge{margin-left:auto;font-size:13px;font-weight:600;color:#1f2937}
+.section-new-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(91,191,170,0.25);color:#5bbfaa;font-weight:600;margin-left:8px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="card-wrap">
+    <div class="tt-header">
+      <img src="https://cdn.prod.website-files.com/633b4526ebc2c823594ab566/633b4526ebc2c8219a4ab6a3_top-tier-logo.png" alt="Top Tier Solar Solutions">
+      <div class="tt-header-text">
+        <h1>Warehouse Safety Audit</h1>
+        <p>OSHA Compliance Checklist — Warehouse Audit #1983</p>
+      </div>
+    </div>
+
+    <div class="inner">
+      <div class="audit-meta">
+        <div class="meta-field"><label>Auditor name</label><input type="text" placeholder="e.g. Hugh Williams Jr" id="auditor-name"></div>
+        <div class="meta-field"><label>Location / warehouse</label><input type="text" placeholder="e.g. Charlotte, NC" id="audit-location"></div>
+        <div class="meta-field"><label>Date</label><input type="date" id="audit-date"></div>
+      </div>
+
+      <div class="status-bar">
+        <span style="font-size:12px;font-weight:600;color:#6b7280;margin-right:.25rem">Progress:</span>
+        <span class="stat-pill"><span class="dot dot-yes"></span><span id="cnt-yes">0</span> pass</span>
+        <span class="stat-pill"><span class="dot dot-no"></span><span id="cnt-no">0</span> fail</span>
+        <span class="stat-pill"><span class="dot dot-na"></span><span id="cnt-na">0</span> N/A</span>
+        <span class="stat-pill"><span class="dot dot-open"></span><span id="cnt-open">0</span> unanswered</span>
+        <span class="score-badge" id="score-pct">—</span>
+      </div>
+
+      <div id="sections"></div>
+
+      <div class="submit-area">
+        <button class="submit-btn secondary" onclick="exportTxt()"><i class="ti ti-download"></i>Export .txt report</button>
+        <button class="submit-btn" onclick="printReport()"><i class="ti ti-printer"></i>Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+  <p style="text-align:center;font-size:11px;color:#9ca3af;margin-top:1rem">© Top Tier Solar Solutions — Internal Use Only</p>
+</div>
+
+<script>
+function osha(ref, text){
+  return `<span class="osha-tag">OSHA<span class="osha-tooltip"><strong>${ref}</strong>${text}</span></span>`;
+}
+
+const SECTIONS = [
+  {
+    id:"office", label:"General office", icon:"ti-building",
+    items:[
+      {q:"Are labor posters mounted in a common area?", cite:osha("29 CFR 1903.2","Employers must post OSHA notices in a conspicuous place where employees report to work.")},
+      {q:"Are the office walking surfaces clear of obstructions?", cite:osha("29 CFR 1910.22(a)","Walking-working surfaces must be kept clean, orderly, and free of hazards.")},
+      {q:"Are computer cords managed properly? (No daisy-chaining)", cite:osha("29 CFR 1910.303(b)","Electrical equipment must be used in a manner that does not create an overcurrent or fire hazard; daisy-chaining power strips is a common citation.")},
+      {q:"Are the property emergency evacuation maps posted?", cite:osha("29 CFR 1910.38(b)","Emergency action plans must include procedures for reporting emergencies and evacuation routes.")},
+      {q:"Is the break room clean, free of mold and residue?", cite:osha("29 CFR 1910.141","Employers must provide sanitary conditions in eating and break areas to protect employee health.")},
+    ]
+  },
+  {
+    id:"fire", label:"Fire extinguishers", icon:"ti-fire-extinguisher",
+    items:[
+      {q:"Are all fire extinguishers fully charged (arrow in green)?", cite:osha("29 CFR 1910.157(e)(1)","Portable fire extinguishers must be maintained in a fully charged and operable condition.")},
+      {q:"Are all fire extinguisher pins secured via tie wrap?", cite:osha("29 CFR 1910.157(e)(1)","Extinguishers must be kept operable; loose pins indicate a unit may have been used or tampered with.")},
+      {q:"Are all fire extinguishers mounted at appropriate height?", cite:osha("29 CFR 1910.157(c)(6)","Extinguishers weighing 40 lbs or less must be mounted so the handle is no higher than 5 feet from the floor.")},
+      {q:"Are all fire extinguishers within 1 year of stamped date?", cite:osha("29 CFR 1910.157(e)(3)","Stored-pressure extinguishers must receive an annual maintenance check.")},
+      {q:"Is a fire extinguisher mounted approximately every 75 feet?", cite:osha("29 CFR 1910.157(d)(2)","For Class A hazards, travel distance to any extinguisher must not exceed 75 feet.")},
+      {q:"Are all fire extinguishers inspected monthly and signed on tag?", flag:true, cite:osha("29 CFR 1910.157(e)(2)","Extinguishers must be visually inspected monthly; the inspection date must be recorded on a tag attached to the unit.")},
+    ]
+  },
+  {
+    id:"general", label:"General warehouse", icon:"ti-building-warehouse",
+    items:[
+      {q:"Are warehouse walkways clear?", cite:osha("29 CFR 1910.22(b)","Aisles and passageways must be kept clear and in good repair, with no obstruction that could create a hazard.")},
+      {q:"Do electrical panels have 3 feet of clearance?", cite:osha("29 CFR 1910.303(g)(1)","A minimum of 3 feet of clear space must be maintained in front of all electrical panels.")},
+      {q:"Are ladders secured vertically or stored horizontally?", flag:true, cite:osha("29 CFR 1910.23(b)","Ladders must be stored in a manner that prevents accidental displacement and physical damage.")},
+      {q:"Does the ice machine have a rubber mat in front to prevent slip hazards?", cite:osha("29 CFR 1910.22(a)(2)","Floors must be kept clean and dry; anti-slip mats are required in areas prone to wet conditions.")},
+      {q:"Does the warehouse have an eye wash kit mounted?", cite:osha("29 CFR 1910.151(c)","Where employees may be exposed to injurious corrosive materials, suitable facilities for flushing eyes must be provided.")},
+      {q:"Does the warehouse have a fully stocked first aid kit?", cite:osha("29 CFR 1910.151(b)","Adequate first aid supplies must be readily available in every workplace.")},
+      {q:"Are all emergency exits clear of obstructions?", flag:true, cite:osha("29 CFR 1910.37(a)(3)","Exit routes must remain free of obstructions at all times to allow unobstructed egress during an emergency.")},
+    ]
+  },
+  {
+    id:"forklift", label:"Forklift", icon:"ti-forklift",
+    items:[
+      {q:"Are the daily inspection sheets kept up to date?", cite:osha("29 CFR 1910.178(q)(7)","Powered industrial trucks must be examined before each shift; defects must be reported and corrected before use.")},
+      {q:"Are propane tanks being stored in approved cages?", cite:osha("29 CFR 1910.110(b)(6)","LP-Gas cylinders not connected to equipment must be stored in approved locations away from building exits.")},
+      {q:"Is the forklift in good working condition?", cite:osha("29 CFR 1910.178(p)(1)","Trucks in need of repair must be taken out of service; only authorized repairs by qualified personnel are permitted.")},
+      {q:"Are forklift operators trained and certified?", cite:osha("29 CFR 1910.178(l)","Operators must be trained and evaluated before operating a powered industrial truck; retraining is required after observed unsafe operation.")},
+      {q:"Are forklift speed limit signs posted in the warehouse?", cite:osha("29 CFR 1910.178(n)(8)","Safe speeds must be maintained, and where pedestrians may be present, adequate warnings must be in place.")},
+    ]
+  },
+  {
+    id:"specific", label:"Warehouse specific", icon:"ti-packages",
+    items:[
+      {q:"Do storage racks have maximum weight labels posted on each shelf?", flag:true, cite:osha("29 CFR 1910.176(b)","Storage racks must have posted maximum safe load limits; exceeding limits creates a collapse hazard.")},
+      {q:"Are conduit and rails stored properly?", cite:osha("29 CFR 1910.176(b)","Materials must be stored in a stable manner; long materials like conduit must be secured to prevent tipping or rolling.")},
+      {q:"Is the flammable cabinet free of combustibles?", flag:true, cite:osha("29 CFR 1910.106(d)(3)","Flammable liquid storage cabinets must not contain non-flammable combustibles; mixing materials defeats the purpose of the cabinet.")},
+      {q:"Is the safety data sheet (SDS) binder stocked and mounted in warehouse?", cite:osha("29 CFR 1910.1200(g)","Employers must maintain SDS for each hazardous chemical and ensure they are readily accessible to employees during each work shift.")},
+      {q:"Is safety equipment for all field personnel fully stocked? (Arc flash shield, PPE)", flag:true, cite:osha("29 CFR 1910.132(d)","Employers must assess the workplace for hazards requiring PPE and ensure adequate equipment is provided for all workers.")},
+      {q:"Is the parking area clean of debris?", cite:osha("29 CFR 1910.22(a)","All walking and working surfaces, including external areas, must be maintained free of debris and hazards.")},
+      {q:"Is recycled and discarded material completely inside dumpsters (nothing sticking out)?", flag:true, cite:osha("29 CFR 1910.176(c)","Aisles and storage areas must be kept free of hazardous projections; materials sticking out of dumpsters can cause lacerations.")},
+      {q:"Are pallets NOT stacked more than 7 feet?", cite:osha("29 CFR 1910.176(b)","Stacking height limits must be observed to prevent collapse; 7 feet is the commonly enforced limit for unsupported pallet stacking.")},
+      {q:"Does the dock ramp have a bright-colored barrier blocking the fall hazard?", cite:osha("29 CFR 1910.29(b)(1)","Dock edges and open sides with a drop of 4 feet or more must be guarded by a standard railing or equivalent barrier.")},
+    ]
+  },
+  {
+    id:"solar", label:"Solar & battery — OSHA specific", icon:"ti-solar-panel", isNew:true,
+    items:[
+      {q:"Are all electrical workers trained in arc flash / shock hazards?", isNew:true, cite:osha("29 CFR 1910.332 / NFPA 70E","Electrical workers must be trained in the specific hazards of their work, including arc flash boundaries and proper PPE selection per NFPA 70E.")},
+      {q:"Are arc flash PPE (face shields, gloves, rated clothing) fully stocked and accessible?", isNew:true, flag:true, cite:osha("29 CFR 1910.335(a)(1)","Employees working on or near exposed energized parts must use protective equipment appropriate for the specific parts and voltage levels.")},
+      {q:"Are battery storage areas properly ventilated?", isNew:true, flag:true, cite:osha("29 CFR 1910.305 / NEC 480","Battery rooms must have ventilation sufficient to prevent accumulation of hydrogen gas; OSHA cites NEC 480 as the applicable standard.")},
+      {q:"Is a spill kit available near the battery storage area?", isNew:true, cite:osha("29 CFR 1910.1200 / EPA 40 CFR 264","Employers must have procedures and equipment for cleanup of hazardous material spills, including battery electrolyte.")},
+      {q:"Are all battery storage areas clearly labeled with hazard signage?", isNew:true, cite:osha("29 CFR 1910.145(c)","Danger signs must be used where an immediate hazard exists; battery areas present shock, chemical, and explosion risks.")},
+      {q:"Is appropriate PPE (rubber gloves, face shield) available near battery work areas?", isNew:true, cite:osha("29 CFR 1910.137","Electrical protective equipment including rubber insulating gloves must be provided and maintained for battery work.")},
+      {q:"Are inverters and electrical panels clearly labeled and accessible?", isNew:true, cite:osha("29 CFR 1910.303(f)","All electrical equipment must be marked with voltage, current, and wattage ratings; panels must remain accessible for emergency shutoff.")},
+      {q:"Are DC disconnect switches labeled and accessible?", isNew:true, cite:osha("29 CFR 1910.303(f) / NEC 690.13","Solar PV systems require a readily accessible DC disconnect; OSHA requires clear labeling of all disconnecting means.")},
+      {q:"Is fall protection equipment (harnesses, lanyards) inspected and within service date?", isNew:true, flag:true, cite:osha("29 CFR 1926.502(d)","Personal fall arrest systems must be inspected before each use; equipment subjected to impact load must be removed from service immediately.")},
+      {q:"Are roof-work safety plans current and posted for field crews?", isNew:true, cite:osha("29 CFR 1926.502","A fall protection plan must be in place for any work at heights of 6 feet or more in construction environments, including rooftop solar installs.")},
+      {q:"Is there a written Hazard Communication (HazCom) program in place?", isNew:true, cite:osha("29 CFR 1910.1200(e)","Employers must develop and implement a written HazCom program that lists all hazardous chemicals and outlines training and labeling procedures.")},
+      {q:"Are Safety Data Sheets accessible for all chemicals on site (solvents, adhesives)?", isNew:true, cite:osha("29 CFR 1910.1200(g)(8)","SDS must be immediately accessible to employees during each work shift in their work areas.")},
+      {q:"Are vehicle / trailer pre-trip inspection logs current?", isNew:true, cite:osha("29 CFR 1910.178(q) / DOT 396.11","OSHA requires inspection of powered equipment before use; DOT also requires daily driver vehicle inspection reports for commercial vehicles.")},
+    ]
+  },
+  {
+    id:"emergency", label:"Emergency preparedness", icon:"ti-alert-triangle", isNew:true,
+    items:[
+      {q:"Is there a written emergency action plan posted and reviewed with employees?", isNew:true, cite:osha("29 CFR 1910.38(a)","Employers with more than 10 employees must have a written Emergency Action Plan covering evacuation, emergency reporting, and employee accountability.")},
+      {q:"Are emergency contact numbers posted in visible locations?", isNew:true, cite:osha("29 CFR 1910.38(c)(1)","The EAP must include procedures for reporting emergencies; posting numbers prominently is considered a best practice and directly supports this requirement.")},
+      {q:"Have all employees received emergency egress training in the last 12 months?", isNew:true, cite:osha("29 CFR 1910.38(f)","Employees must be trained when the EAP is first developed and whenever their responsibilities or the plan changes.")},
+      {q:"Is an AED (defibrillator) present and accessible?", isNew:true, cite:osha("29 CFR 1910.151 / OSHA LOI","OSHA strongly recommends AEDs in the workplace as part of first aid readiness; some state plans require them.")},
+      {q:"Are first aid-certified employees identified and their certs current?", isNew:true, cite:osha("29 CFR 1910.151(b)","In the absence of an infirmary or clinic near the workplace, a person trained to render first aid must be available.")},
+    ]
+  }
+];
+
+const state = {};
+SECTIONS.forEach(s => s.items.forEach((item,i)=>{
+  state[`${s.id}-${i}`]={answer:null,comment:"",photos:[]};
+}));
+
+function buildSections(){
+  const cont=document.getElementById("sections");
+  SECTIONS.forEach(sec=>{
+    const card=document.createElement("div");
+    card.className="section-card";
+    const secBadge=sec.isNew?`<span class="section-new-badge"><i class="ti ti-sparkles" style="font-size:10px"></i>Added</span>`:'';
+    card.innerHTML=`
+      <div class="section-header" onclick="toggleSection('body-${sec.id}',this)">
+        <i class="ti ${sec.icon} sec-icon"></i>
+        <span class="sec-label">${sec.label}${secBadge}</span>
+        <i class="ti ti-chevron-down toggle"></i>
+      </div>
+      <div class="section-body" id="body-${sec.id}">
+        ${sec.items.map((item,i)=>buildItem(sec.id,item,i)).join('')}
+      </div>`;
+    cont.appendChild(card);
+  });
+}
+
+function buildItem(secId,item,i){
+  const key=`${secId}-${i}`;
+  const flagBadge=item.flag?`<span class="flag-badge"><i class="ti ti-alert-circle" style="font-size:10px"></i>High priority</span>`:'';
+  const oshaBadge=item.cite?item.cite:'';
+  const newBadge=item.isNew?`<span class="new-badge"><i class="ti ti-sparkles" style="font-size:10px"></i>OSHA+</span>`:'';
+  return `
+  <div class="audit-item" id="item-${key}">
+    <div class="item-row">
+      <span class="item-question">${item.q}${flagBadge}${newBadge}${oshaBadge}</span>
+      <div class="btn-group">
+        <button class="answer-btn btn-yes" onclick="setAnswer('${key}','yes',this)">Yes</button>
+        <button class="answer-btn btn-no" onclick="setAnswer('${key}','no',this)">No</button>
+        <button class="answer-btn btn-na" onclick="setAnswer('${key}','na',this)">N/A</button>
+      </div>
+    </div>
+    <div class="item-details" id="details-${key}">
+      <textarea placeholder="Add a note or corrective action..." oninput="saveComment('${key}',this.value)"></textarea>
+      <div class="photo-area">
+        <div class="photo-label"><i class="ti ti-camera" style="font-size:13px"></i>Photos (click thumbnail to remove)</div>
+        <div class="photo-thumbs" id="thumbs-${key}"></div>
+        <label class="upload-btn">
+          <input type="file" accept="image/*" multiple onchange="addPhotos('${key}',this)">
+          <i class="ti ti-upload" style="font-size:13px"></i>Add photo
+        </label>
+      </div>
+    </div>
+  </div>`;
+}
+
+function setAnswer(key,ans,btn){
+  state[key].answer=ans;
+  const row=document.getElementById(`item-${key}`);
+  row.querySelectorAll(".answer-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById(`details-${key}`).classList.toggle("show", ans==='no');
+  updateStats();
+}
+
+function saveComment(key,val){state[key].comment=val;}
+
+function addPhotos(key,input){
+  Array.from(input.files).forEach(f=>{
+    const url=URL.createObjectURL(f);
+    state[key].photos.push({name:f.name,url});
+    const thumbs=document.getElementById(`thumbs-${key}`);
+    const img=document.createElement("img");
+    img.src=url; img.className="photo-thumb"; img.title="Click to remove";
+    img.onclick=()=>{img.remove(); state[key].photos=state[key].photos.filter(p=>p.url!==url);};
+    thumbs.appendChild(img);
+  });
+}
+
+function toggleSection(bodyId,header){
+  const body=document.getElementById(bodyId);
+  const isHidden=body.classList.contains("hidden");
+  body.classList.toggle("hidden",!isHidden);
+  header.classList.toggle("collapsed",!isHidden);
+}
+
+function updateStats(){
+  let yes=0,no=0,na=0,open=0;
+  Object.values(state).forEach(s=>{
+    if(s.answer==='yes')yes++;
+    else if(s.answer==='no')no++;
+    else if(s.answer==='na')na++;
+    else open++;
+  });
+  document.getElementById("cnt-yes").textContent=yes;
+  document.getElementById("cnt-no").textContent=no;
+  document.getElementById("cnt-na").textContent=na;
+  document.getElementById("cnt-open").textContent=open;
+  const pct=(yes+no)>0?Math.round(yes/(yes+no)*100):null;
+  document.getElementById("score-pct").textContent=pct!==null?`Pass rate: ${pct}%`:"—";
+}
+
+function exportTxt(){
+  const auditor=document.getElementById("auditor-name").value||"—";
+  const location=document.getElementById("audit-location").value||"—";
+  const date=document.getElementById("audit-date").value||new Date().toISOString().slice(0,10);
+  let lines=[`TOP TIER SOLAR SOLUTIONS — WAREHOUSE SAFETY AUDIT`,`Auditor: ${auditor}`,`Location: ${location}`,`Date: ${date}`,``];
+  SECTIONS.forEach(sec=>{
+    lines.push(`\n=== ${sec.label.toUpperCase()} ===`);
+    sec.items.forEach((item,i)=>{
+      const k=`${sec.id}-${i}`;
+      const s=state[k];
+      const ans=s.answer?s.answer.toUpperCase():"UNANSWERED";
+      lines.push(`[${ans}] ${item.q}`);
+      if(s.comment)lines.push(`  Note: ${s.comment}`);
+    });
+  });
+  const blob=new Blob([lines.join("\n")],{type:"text/plain"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`audit-report-${date}.txt`;
+  a.click();
+}
+
+function printReport(){window.print();}
+
+buildSections();
+document.getElementById("audit-date").value=new Date().toISOString().slice(0,10);
+updateStats();
+</script>
+</body>
+</html>

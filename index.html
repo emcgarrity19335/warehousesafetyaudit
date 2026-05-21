@@ -91,16 +91,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .toast.show{opacity:1}
 
 /* ── Print styles ── */
+.print-answer{display:none}
 @media print {
   body{background:#fff;padding:0}
   .wrapper{max-width:100%}
   .card-wrap{box-shadow:none;border-radius:0}
-  .submit-area,.upload-btn,.btn-group,.autosave-bar{display:none!important}
-  .osha-tag{display:none}
+  .submit-area,.upload-btn,.autosave-bar,.osha-tag,.flag-badge,.new-badge,.section-new-badge{display:none!important}
   .section-body.hidden{display:block!important}
   .section-header{border-radius:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .item-details{display:block!important}
-  .fine-box{border:1px solid #f5c4a0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .btn-group{display:none!important}
+  .print-answer{display:inline-block!important;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px;margin-left:8px;vertical-align:middle}
+  .print-answer.ans-yes{background:#d1fae5;color:#065f46}
+  .print-answer.ans-no{background:#fde8e0;color:#9a3c1e}
+  .print-answer.ans-na{background:#f3f4f6;color:#4b5563}
+  .print-answer.ans-unanswered{background:#f3f4f6;color:#9ca3af}
+  .item-details{display:none!important}
+  .item-details.show{display:block!important}
+  .fine-box{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .fine-summary{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .photo-thumb{width:160px!important;height:160px!important;page-break-inside:avoid}
   .photo-thumbs{gap:12px!important}
   .audit-item{page-break-inside:avoid}
@@ -152,9 +160,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="submit-area">
         <button class="submit-btn secondary" onclick="exportTxt()"><i class="ti ti-download"></i>Export .txt</button>
         <button class="submit-btn" onclick="printReport()"><i class="ti ti-printer"></i>Print / PDF</button>
-        <button class="submit-btn green" onclick="saveToSheets()" id="sheets-btn"><i class="ti ti-brand-google"></i>Save to Google Sheets</button>
+        <button class="submit-btn green" onclick="generateReport()" id="report-btn"><i class="ti ti-share"></i>Save Shareable Report</button>
       </div>
-      <p style="text-align:center;font-size:11px;color:#9ca3af;margin-top:.75rem">Progress auto-saves to this browser. Use "Save to Google Sheets" to share or archive a completed audit.</p>
+      <p style="text-align:center;font-size:11px;color:#9ca3af;margin-top:.75rem">Progress auto-saves to this browser. &quot;Save Shareable Report&quot; creates a standalone HTML file with all answers, notes, and full-size photos — just email it and anyone can open it.</p>
     </div>
   </div>
   <p style="text-align:center;font-size:11px;color:#9ca3af;margin-top:1rem">© Top Tier Solar Solutions — Internal Use Only</p>
@@ -280,7 +288,7 @@ function buildItem(secId, item, i){
   return `
   <div class="audit-item" id="item-${key}">
     <div class="item-row">
-      <span class="item-question">${item.q}${flagBadge}${newBadge}${oshaBadge}</span>
+      <span class="item-question">${item.q}${flagBadge}${newBadge}${oshaBadge}<span class="print-answer ans-unanswered" id="print-${key}">Unanswered</span></span>
       <div class="btn-group">
         <button class="answer-btn btn-yes" onclick="setAnswer('${key}','yes',this)">Yes</button>
         <button class="answer-btn btn-no" onclick="setAnswer('${key}','no',this)">No</button>
@@ -305,6 +313,12 @@ function setAnswer(key, ans, btn){
   row.querySelectorAll(".answer-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
   document.getElementById(`details-${key}`).classList.toggle("show", ans === 'no');
+  // Update print label
+  const pl = document.getElementById(`print-${key}`);
+  if(pl){
+    pl.className = `print-answer ans-${ans}`;
+    pl.textContent = ans === 'yes' ? 'YES' : ans === 'no' ? 'NO' : 'N/A';
+  }
   updateStats();
   scheduleAutosave();
 }
@@ -406,6 +420,8 @@ function loadFromLocalStorage(){
           document.getElementById(`details-${key}`).classList.toggle("show", s.answer==='no');
           const ta = document.querySelector(`#details-${key} textarea`);
           if(ta) ta.value = s.comment || '';
+          const pl = document.getElementById(`print-${key}`);
+          if(pl){ pl.className=`print-answer ans-${s.answer}`; pl.textContent=s.answer==='yes'?'YES':s.answer==='no'?'NO':'N/A'; }
         }
       });
     }
@@ -414,66 +430,162 @@ function loadFromLocalStorage(){
   } catch(e){}
 }
 
-// ── Save to Google Sheets via Apps Script ──
-// Sheet ID: 1gEqDzZeJGPeA_b57cGGxbmsskY2kiRZrv3kOfjswJoM
-// To enable: In Google Sheets → Extensions → Apps Script → paste the doPost script → Deploy as Web App → paste URL below
-const SHEETS_WEBHOOK = ''; // <-- paste your Apps Script Web App URL here after setup
-
 function showToast(msg, dur=3000){
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), dur);
 }
 
-async function saveToSheets(){
+// ── Generate standalone shareable HTML report ──
+async function generateReport(){
+  const btn = document.getElementById('report-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i>Building report...';
+
   const auditor = document.getElementById('auditor-name').value || '—';
   const location = document.getElementById('audit-location').value || '—';
   const date = document.getElementById('audit-date').value || new Date().toISOString().slice(0,10);
 
-  if(!SHEETS_WEBHOOK){
-    // Build a CSV and download it — user can import to the sheet manually
-    let rows = [['Date','Location','Auditor','Section','Question','Answer','Note','Fine Min','Fine Max']];
-    let totalMin=0, totalMax=0;
-    SECTIONS.forEach(sec => {
-      sec.items.forEach((item,i) => {
-        const k = `${sec.id}-${i}`;
-        const s = state[k];
-        const ans = s.answer || 'unanswered';
-        if(ans==='no' && item.fineMin){ totalMin+=item.fineMin; totalMax+=item.fineMax; }
-        rows.push([date, location, auditor, sec.label, item.q, ans, s.comment||'',
-          ans==='no'&&item.fineMin ? item.fineMin : '', ans==='no'&&item.fineMax ? item.fineMax : '']);
+  // Convert all photo blob URLs to base64
+  async function toBase64(url){
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return await new Promise(resolve => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.readAsDataURL(blob);
       });
-    });
-    rows.push(['','','','','TOTAL FINE EXPOSURE','','', totalMin, totalMax]);
-    const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], {type:'text/csv'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `audit-${date}.csv`;
-    a.click();
-    showToast('📥 CSV downloaded — drag it into your Google Sheet to import!', 5000);
-    return;
+    } catch(e){ return null; }
   }
 
-  // If webhook is configured, POST directly
-  const btn = document.getElementById('sheets-btn');
-  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i>Saving...';
-  const rows = [];
-  SECTIONS.forEach(sec => {
-    sec.items.forEach((item,i) => {
+  // Collect all items with data
+  let totalMin=0, totalMax=0, violations=[];
+  let yes=0, no=0, na=0, open=0;
+  const itemData = [];
+  for(const sec of SECTIONS){
+    const secItems = [];
+    for(let i=0; i<sec.items.length; i++){
+      const item = sec.items[i];
       const k = `${sec.id}-${i}`;
       const s = state[k];
-      rows.push([date, location, auditor, sec.label, item.q, s.answer||'unanswered', s.comment||'',
-        s.answer==='no'&&item.fineMin?item.fineMin:'', s.answer==='no'&&item.fineMax?item.fineMax:'']);
-    });
-  });
-  try {
-    await fetch(SHEETS_WEBHOOK, {method:'POST', body:JSON.stringify({rows}), headers:{'Content-Type':'application/json'}});
-    showToast('✅ Audit saved to Google Sheets!');
-  } catch(e){
-    showToast('❌ Could not reach Sheets. Try the CSV export instead.');
+      const ans = s.answer || 'unanswered';
+      if(ans==='yes') yes++;
+      else if(ans==='no'){ no++; if(item.fineMin){totalMin+=item.fineMin;totalMax+=item.fineMax;} violations.push(item.q); }
+      else if(ans==='na') na++;
+      else open++;
+      // Convert photos
+      const photoB64 = [];
+      for(const p of s.photos){
+        const b64 = await toBase64(p.url);
+        if(b64) photoB64.push({name:p.name, data:b64});
+      }
+      secItems.push({q:item.q, ans, comment:s.comment||'', photos:photoB64, flag:item.flag, fineMin:item.fineMin, fineMax:item.fineMax});
+    }
+    itemData.push({label:sec.label, items:secItems});
   }
-  btn.disabled = false; btn.innerHTML = '<i class="ti ti-brand-google"></i>Save to Google Sheets';
+
+  const passRate = (yes+no)>0 ? Math.round(yes/(yes+no)*100) : null;
+
+  function ansColor(ans){ return ans==='yes'?'#1d9e75':ans==='no'?'#d85a30':ans==='na'?'#9ca3af':'#d1d5db'; }
+  function ansLabel(ans){ return ans==='yes'?'YES':ans==='no'?'NO':ans==='na'?'N/A':'—'; }
+
+  const sectionsHtml = itemData.map(sec => `
+    <div style="border:1px solid #e4e6ea;border-radius:12px;margin-bottom:1.25rem;overflow:hidden;page-break-inside:avoid">
+      <div style="background:#1a2e4a;color:#fff;padding:.75rem 1.25rem;display:flex;align-items:center;gap:.5rem">
+        <span style="font-size:14px;font-weight:600">${sec.label}</span>
+      </div>
+      <div style="padding:.5rem 1.25rem">
+        ${sec.items.map(item => `
+        <div style="padding:.75rem 0;border-bottom:1px solid #f0f2f5">
+          <div style="display:flex;align-items:flex-start;gap:1rem">
+            <span style="flex:1;font-size:13.5px;color:#1f2937;line-height:1.55;padding-top:4px">
+              ${item.q}
+              ${item.flag ? '<span style="display:inline-flex;align-items:center;font-size:10px;padding:2px 7px;border-radius:10px;background:#fde8e0;color:#9a3c1e;font-weight:600;margin-left:6px;vertical-align:middle">High priority</span>' : ''}
+            </span>
+            <span style="flex-shrink:0;padding:5px 16px;font-size:12px;font-weight:700;border-radius:20px;background:${ansColor(item.ans)};color:#fff;margin-top:2px">${ansLabel(item.ans)}</span>
+          </div>
+          ${item.ans==='no' ? `
+            ${item.fineMin ? `<div style="background:#fff8f5;border:1px solid #f5c4a0;border-radius:8px;padding:.55rem .9rem;margin-top:.5rem;font-size:12px;color:#7c2d0e">
+              💰 Potential OSHA fine: <strong>$${item.fineMin.toLocaleString()} – $${item.fineMax.toLocaleString()}</strong> per violation (2024 penalty schedule)
+            </div>` : ''}
+            ${item.comment ? `<div style="margin-top:.5rem;padding:.6rem .9rem;background:#f9fafb;border:1px solid #e4e6ea;border-radius:8px;font-size:12.5px;color:#374151;white-space:pre-wrap">${item.comment.replace(/</g,'&lt;')}</div>` : ''}
+            ${item.photos.length ? `<div style="margin-top:.6rem;display:flex;flex-wrap:wrap;gap:10px">
+              ${item.photos.map(p => `<img src="${p.data}" alt="${p.name}" style="width:200px;height:200px;object-fit:cover;border-radius:8px;border:1px solid #e4e6ea">`).join('')}
+            </div>` : ''}
+          ` : ''}
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  const fineBanner = violations.length ? `
+    <div style="background:#fff8f5;border:1.5px solid #f5c4a0;border-radius:10px;padding:.9rem 1.25rem;margin-bottom:1.5rem">
+      <div style="font-size:13px;font-weight:700;color:#7c2d0e;margin-bottom:.75rem">⚠️ Potential OSHA fine exposure from current findings</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:.75rem">
+        <div style="background:#fff;border:1px solid #fbd5b5;border-radius:8px;padding:.6rem .85rem"><div style="font-size:10px;color:#9a4c1a;font-weight:600;text-transform:uppercase;margin-bottom:2px">Violations flagged</div><div style="font-size:22px;font-weight:700;color:#7c2d0e">${violations.length}</div></div>
+        <div style="background:#fff;border:1px solid #fbd5b5;border-radius:8px;padding:.6rem .85rem"><div style="font-size:10px;color:#9a4c1a;font-weight:600;text-transform:uppercase;margin-bottom:2px">Min. exposure</div><div style="font-size:22px;font-weight:700;color:#7c2d0e">$${totalMin.toLocaleString()}</div></div>
+        <div style="background:#fff;border:1px solid #fbd5b5;border-radius:8px;padding:.6rem .85rem"><div style="font-size:10px;color:#9a4c1a;font-weight:600;text-transform:uppercase;margin-bottom:2px">Max. exposure</div><div style="font-size:22px;font-weight:700;color:#7c2d0e">$${totalMax.toLocaleString()}</div></div>
+      </div>
+      ${violations.map(v=>`<div style="font-size:12px;color:#7c2d0e;line-height:1.8">• ${v}</div>`).join('')}
+    </div>` : '';
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Top Tier Audit Report — ${location} — ${date}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;padding:1.5rem 1rem}
+.wrap{max-width:820px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.hdr{background:#1a2e4a;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem}
+.hdr img{height:40px;filter:brightness(0) invert(1)}
+.hdr h1{font-size:18px;font-weight:600;color:#fff}
+.hdr p{font-size:12px;color:#a8c4e0;margin-top:2px}
+.inner{padding:1.25rem 1.5rem}
+.meta{background:#f7f8fa;border:1px solid #e4e6ea;border-radius:10px;padding:1rem 1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1.5rem}
+.meta-label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:3px}
+.meta-val{font-size:14px;font-weight:600;color:#1a2e4a}
+.progress{display:flex;gap:1rem;background:#f7f8fa;border:1px solid #e4e6ea;border-radius:10px;padding:.75rem 1.25rem;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border-radius:0}img{page-break-inside:avoid}div{page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <img src="https://cdn.prod.website-files.com/633b4526ebc2c823594ab566/633b4526ebc2c8219a4ab6a3_top-tier-logo.png" alt="Top Tier Solar Solutions">
+    <div><h1>Warehouse Safety Audit Report</h1><p>OSHA Compliance Checklist — Generated ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p></div>
+  </div>
+  <div class="inner">
+    <div class="meta">
+      <div><div class="meta-label">Auditor</div><div class="meta-val">${auditor}</div></div>
+      <div><div class="meta-label">Location</div><div class="meta-val">${location}</div></div>
+      <div><div class="meta-label">Date</div><div class="meta-val">${date}</div></div>
+    </div>
+    <div class="progress">
+      <span style="font-size:12px;font-weight:600;color:#6b7280;margin-right:.25rem">Results:</span>
+      <span style="font-size:13px"><span class="dot" style="background:#1d9e75"></span>${yes} pass</span>
+      <span style="font-size:13px"><span class="dot" style="background:#d85a30"></span>${no} fail</span>
+      <span style="font-size:13px"><span class="dot" style="background:#9ca3af"></span>${na} N/A</span>
+      ${open>0?`<span style="font-size:13px"><span class="dot" style="background:#d1d5db"></span>${open} unanswered</span>`:''}
+      <span style="margin-left:auto;font-size:13px;font-weight:700;color:#1f2937">${passRate!==null?`Pass rate: ${passRate}%`:''}</span>
+    </div>
+    ${fineBanner}
+    ${sectionsHtml}
+    <p style="text-align:center;font-size:11px;color:#9ca3af;margin-top:1.5rem;padding-bottom:.5rem">© Top Tier Solar Solutions — Confidential Internal Document</p>
+  </div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `TT-Audit-${location.replace(/[^a-z0-9]/gi,'-')}-${date}.html`;
+  a.click();
+  showToast('✅ Report saved! Open in any browser or email it directly.', 4000);
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-share"></i>Save Shareable Report';
 }
 
 function exportTxt(){
